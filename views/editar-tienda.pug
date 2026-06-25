@@ -1,0 +1,83 @@
+extends layout
+
+block content
+  .container(style="display: flex; justify-content: center; align-items: center; min-height: 70vh; padding: 0;")
+    .card(style="width: 100%; max-width: 500px; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);")
+      div(style="text-align: center; margin-bottom: 2rem;")
+        h2(style="font-size: 1.75rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;") Editar Tienda
+        p(style="color: var(--text-muted); font-size: 0.95rem;") Modificá los datos de la tienda
+
+      #error-container(style="display: none; background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 500;")
+
+      form#editar-tienda-form
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="nombre" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Nombre
+          input#nombre(
+            type="text" 
+            name="nombre" 
+            placeholder="Tienda Central" 
+            required 
+            value=tienda.nombre
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+
+        .form-group(style="margin-bottom: 1.75rem;")
+          label(for="direccion" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Dirección
+          input#direccion(
+            type="text" 
+            name="direccion" 
+            placeholder="Av. Siempre Viva 123" 
+            required 
+            value=tienda.direccion
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+
+        div(style="display: flex; gap: 1rem;")
+          a.btn(href="/vistas/tiendas" style="flex: 1; text-align: center; border: 1px solid var(--border); color: var(--text-muted); padding: 0.75rem; font-size: 1rem; box-sizing: border-box;") Cancelar
+          button.btn.btn-primary(
+            type="submit" 
+            style="flex: 2; padding: 0.75rem; border: none; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);"
+          ) Guardar Cambios
+
+  script.
+    document.getElementById('editar-tienda-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const errorContainer = document.getElementById('error-container');
+      errorContainer.style.display = 'none';
+      errorContainer.textContent = '';
+      
+      const nombre = document.getElementById('nombre').value;
+      const direccion = document.getElementById('direccion').value;
+      
+      try {
+        const response = await fetch('/tiendas/#{tienda._id}', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          },
+          body: JSON.stringify({ nombre, direccion })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Ocurrió un error al actualizar la tienda.');
+        }
+        
+        showToast('Tienda actualizada correctamente', 'success');
+        setTimeout(function() {
+          window.location.href = '/vistas/tiendas';
+        }, 1000);
+        
+      } catch (err) {
+        errorContainer.textContent = err.message;
+        errorContainer.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });

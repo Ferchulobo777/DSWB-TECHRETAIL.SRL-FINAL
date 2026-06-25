@@ -1,0 +1,60 @@
+extends layout
+
+block content
+  header(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: none; border: none; box-shadow: none; padding: 0;")
+    h1 Usuarios
+    a.btn.btn-primary(href="/vistas/usuarios/nuevo") + Nuevo Usuario
+
+  .card
+    table
+      thead
+        tr
+          th Nombre
+          th Apellido
+          th Email
+          th Documento
+          th Rol
+          th Ciudad
+          th Acciones
+      tbody
+        each usuario in usuarios
+          tr
+            td(style="font-weight: 600;")= usuario.nombre
+            td= usuario.apellido
+            td= usuario.email
+            td(style="font-family: monospace;")= usuario.documento
+            td
+              span(class=`badge badge--rol-${usuario.rol}`)= usuario.rol
+            td= usuario.ciudad || "No especificada"
+            td
+              a(href=`/vistas/usuarios/editar/${usuario._id}` style="color: var(--primary); text-decoration: none; margin-right: 1rem;") Editar
+              button.btn-delete(data-id=`${usuario._id}` style="background: none; border: none; color: #ef4444; cursor: pointer; font-family: inherit; font-size: inherit; padding: 0;") Eliminar
+        else
+          tr
+            td(colspan="7" style="text-align: center; padding: 2rem;") No hay usuarios registrados.
+
+  script.
+    document.querySelectorAll('.btn-delete').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        const id = this.getAttribute('data-id');
+        if (!confirm('¿Estás seguro de eliminar este usuario?')) return;
+
+        const token = localStorage.getItem('token');
+        try {
+          const response = await fetch('/usuarios/' + id, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Error al eliminar el usuario.');
+          }
+
+          showToast('Usuario eliminado correctamente', 'success');
+          this.closest('tr').remove();
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+    });

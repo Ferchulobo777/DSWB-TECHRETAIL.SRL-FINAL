@@ -1,0 +1,145 @@
+extends layout
+
+block content
+  .container(style="display: flex; justify-content: center; align-items: center; min-height: 70vh; padding: 0;")
+    .card(style="width: 100%; max-width: 500px; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);")
+      div(style="text-align: center; margin-bottom: 2rem;")
+        h2(style="font-size: 1.75rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;") Nuevo Usuario
+        p(style="color: var(--text-muted); font-size: 0.95rem;") Registra un nuevo administrador o cliente en el sistema
+
+      #error-container(style="display: none; background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 500;")
+
+      form#crear-usuario-form
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="nombre" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Nombre
+          input#nombre(
+            type="text" 
+            name="nombre" 
+            placeholder="Juan" 
+            required 
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="apellido" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Apellido
+          input#apellido(
+            type="text" 
+            name="apellido" 
+            placeholder="Pérez" 
+            required 
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="email" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Correo electrónico
+          input#email(
+            type="email" 
+            name="email" 
+            placeholder="juan.perez@techretail.com" 
+            required 
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="documento" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Documento
+          input#documento(
+            type="text" 
+            name="documento" 
+            placeholder="DNI / CUIL" 
+            required 
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="rol" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Rol
+          select#rol(
+            name="rol"
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none; background: var(--card-bg); cursor: pointer;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+            option(value="cliente" selected) Cliente
+            option(value="vendedor") Vendedor
+            option(value="admin") Admin
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="ciudad" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Ciudad
+          input#ciudad(
+            type="text" 
+            name="ciudad" 
+            placeholder="Buenos Aires (Opcional)" 
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+
+        .form-group(style="margin-bottom: 1.75rem;")
+          label(for="password" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Contraseña
+          input#password(
+            type="password" 
+            name="password" 
+            placeholder="Mínimo 6 caracteres" 
+            required 
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+
+        div(style="display: flex; gap: 1rem;")
+          a.btn(href="/vistas/usuarios" style="flex: 1; text-align: center; border: 1px solid var(--border); color: var(--text-muted); padding: 0.75rem; font-size: 1rem; box-sizing: border-box;") Cancelar
+          button.btn.btn-primary(
+            type="submit" 
+            style="flex: 2; padding: 0.75rem; border: none; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);"
+          ) Crear Usuario
+
+  script.
+    document.getElementById('crear-usuario-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const errorContainer = document.getElementById('error-container');
+      errorContainer.style.display = 'none';
+      errorContainer.textContent = '';
+      
+      const nombre = document.getElementById('nombre').value;
+      const apellido = document.getElementById('apellido').value;
+      const email = document.getElementById('email').value;
+      const documento = document.getElementById('documento').value;
+      const rol = document.getElementById('rol').value;
+      const ciudad = document.getElementById('ciudad').value;
+      const password = document.getElementById('password').value;
+      
+      try {
+        const response = await fetch('/usuarios', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nombre, apellido, email, documento, rol, ciudad, password })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Ocurrió un error al crear el usuario.');
+        }
+        
+        showToast('Usuario creado correctamente', 'success');
+        setTimeout(function() {
+          window.location.href = '/vistas/usuarios';
+        }, 1000);
+        
+      } catch (err) {
+        errorContainer.textContent = err.message;
+        errorContainer.style.display = 'block';
+        // Hacer scroll suave hacia arriba para ver el error
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });

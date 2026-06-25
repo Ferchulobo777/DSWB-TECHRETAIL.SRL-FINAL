@@ -1,0 +1,76 @@
+extends layout
+
+block content
+  .container(style="display: flex; justify-content: center; align-items: center; min-height: 70vh; padding: 0;")
+    .card(style="width: 100%; max-width: 500px; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);")
+      div(style="text-align: center; margin-bottom: 2rem;")
+        h2(style="font-size: 1.75rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;") Nuevo Producto
+        p(style="color: var(--text-muted); font-size: 0.95rem;") Agregá un nuevo producto al catálogo
+
+      #error-container(style="display: none; background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 500;")
+
+      form#crear-producto-form
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="codigo" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Código
+          input#codigo(type="text" name="codigo" placeholder="PROD-001" required style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)';" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';")
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="nombre" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Nombre
+          input#nombre(type="text" name="nombre" placeholder="Nombre del producto" required style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)';" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';")
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="precio" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Precio
+          input#precio(type="number" name="precio" placeholder="0" step="0.01" min="0.01" required style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)';" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';")
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="stock" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Stock
+          input#stock(type="number" name="stock" placeholder="0" min="0" required style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)';" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';")
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="descripcion" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Descripción
+          textarea#descripcion(name="descripcion" placeholder="Descripción del producto (opcional)" rows="3" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; resize: vertical; outline: none;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)';" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';")
+
+        .form-group(style="margin-bottom: 1.75rem;")
+          label(for="tienda" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Tienda
+          select#tienda(name="tienda" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none; background: var(--card-bg); cursor: pointer;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)';" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';")
+            option(value="" selected) Sin tienda
+            each tienda in tiendas
+              option(value=tienda._id)= tienda.nombre
+
+        div(style="display: flex; gap: 1rem;")
+          a.btn(href="/vistas/productos" style="flex: 1; text-align: center; border: 1px solid var(--border); color: var(--text-muted); padding: 0.75rem; font-size: 1rem; box-sizing: border-box;") Cancelar
+          button.btn.btn-primary(type="submit" style="flex: 2; padding: 0.75rem; border: none; font-size: 1rem; cursor: pointer;") Crear Producto
+
+  script.
+    document.getElementById('crear-producto-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const errorContainer = document.getElementById('error-container');
+      errorContainer.style.display = 'none';
+
+      const token = localStorage.getItem('token');
+      const bodyData = {
+        codigo: document.getElementById('codigo').value,
+        nombre: document.getElementById('nombre').value,
+        precio: document.getElementById('precio').value,
+        stock: document.getElementById('stock').value,
+        descripcion: document.getElementById('descripcion').value,
+      };
+      const tienda = document.getElementById('tienda').value;
+      if (tienda) bodyData.tienda = tienda;
+
+      try {
+        const response = await fetch('/productos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify(bodyData)
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Error al crear el producto.');
+        showToast('Producto creado correctamente', 'success');
+        setTimeout(function() { window.location.href = '/vistas/productos'; }, 1000);
+      } catch (err) {
+        errorContainer.textContent = err.message;
+        errorContainer.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });

@@ -1,0 +1,208 @@
+extends layout
+
+block content
+  .container(style="display: flex; justify-content: center; align-items: center; min-height: 70vh; padding: 0;")
+    .card(style="width: 100%; max-width: 600px; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);")
+      div(style="text-align: center; margin-bottom: 2rem;")
+        h2(style="font-size: 1.75rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;") Editar Pedido
+        p(style="color: var(--text-muted); font-size: 0.95rem;") Modificá los datos del pedido
+
+      #error-container(style="display: none; background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 500;")
+
+      form#editar-pedido-form
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="usuarioId" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Cliente
+          select#usuarioId(
+            name="usuarioId"
+            required
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none; background: var(--card-bg); cursor: pointer;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+            option(value="" disabled) Seleccionar cliente
+            each usuario in usuarios
+              option(value=usuario._id selected=(pedido.usuarioId && pedido.usuarioId._id.toString() === usuario._id.toString()))= usuario.nombre
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="tiendaId" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Tienda
+          select#tiendaId(
+            name="tiendaId"
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none; background: var(--card-bg); cursor: pointer;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+            option(value="") General (sin tienda)
+            each tienda in tiendas
+              option(value=tienda._id selected=(pedido.tiendaId && pedido.tiendaId._id.toString() === tienda._id.toString()))= tienda.nombre
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="fecha" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Fecha del pedido
+          input#fecha(
+            type="date"
+            name="fecha"
+            value=pedido.fecha ? new Date(pedido.fecha).toISOString().split('T')[0] : ''
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Productos
+          #productos-container
+            each prodItem, idx in pedido.productos
+              .producto-row(style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: flex-start;")
+                select.producto-select(
+                  required
+                  style="flex: 2; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none; background: var(--card-bg); cursor: pointer;"
+                  onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+                  onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+                )
+                  option(value="" disabled) Seleccionar producto
+                  each producto in productos
+                    option(value=producto._id data-precio=producto.precio data-tienda=producto.tienda || '' selected=(prodItem.productoId && prodItem.productoId._id.toString() === producto._id.toString()))= `${producto.nombre} ($${producto.precio}, stock: ${producto.stock})`
+                input.cantidad-input(
+                  type="number"
+                  placeholder="Cant"
+                  min="1"
+                  value=prodItem.cantidad
+                  required
+                  style="flex: 0 0 80px; padding: 0.75rem 0.5rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; text-align: center; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+                  onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+                  onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+                )
+                button.btn-remove-row(
+                  type="button"
+                  style="flex: 0 0 36px; height: 46px; border: none; background: #fee2e2; color: #ef4444; border-radius: 8px; cursor: pointer; font-size: 1.25rem; display: flex; align-items: center; justify-content: center;"
+                ) ✕
+
+          button#btn-agregar-producto.btn(
+            type="button"
+            style="margin-top: 0.5rem; border: 1px dashed var(--border); color: var(--primary); background: none; width: 100%; padding: 0.5rem; cursor: pointer; font-weight: 500;"
+          ) + Agregar Producto
+
+
+        .form-group(style="margin-bottom: 1.75rem;")
+          label(for="estado" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Estado del pedido
+          select#estado(name="estado" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none; background: var(--card-bg); cursor: pointer;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)';" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';")
+            option(value="pendiente" selected=(pedido.estado === 'pendiente')) Pendiente
+            option(value="completado" selected=(pedido.estado === 'completado')) Completado
+            option(value="cancelado" selected=(pedido.estado === 'cancelado')) Cancelado
+
+        div(style="display: flex; gap: 1rem;")
+          a.btn(href="/vistas/pedidos" style="flex: 1; text-align: center; border: 1px solid var(--border); color: var(--text-muted); padding: 0.75rem; font-size: 1rem; box-sizing: border-box;") Cancelar
+          button.btn.btn-primary(
+            type="submit" 
+            style="flex: 2; padding: 0.75rem; border: none; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);"
+          ) Guardar Cambios
+
+  script.
+    var productosContainer = document.getElementById('productos-container');
+    var btnAgregar = document.getElementById('btn-agregar-producto');
+    var tiendaSelect = document.getElementById('tiendaId');
+
+    function filtrarProductos() {
+      var tiendaId = tiendaSelect.value;
+      var selects = productosContainer.querySelectorAll('.producto-select');
+      selects.forEach(function(sel) {
+        var options = sel.querySelectorAll('option[value]');
+        options.forEach(function(opt) {
+          if (!opt.value) return;
+          if (!tiendaId || opt.getAttribute('data-tienda') === tiendaId || !opt.getAttribute('data-tienda')) {
+            opt.style.display = '';
+          } else {
+            opt.style.display = 'none';
+          }
+        });
+        if (sel.value && !sel.querySelector('option[value="' + sel.value + '"]:not([style*="display: none"])')) {
+          sel.value = '';
+        }
+      });
+    }
+
+    tiendaSelect.addEventListener('change', filtrarProductos);
+    filtrarProductos();
+
+    productosContainer.addEventListener('click', function(e) {
+      if (e.target.classList.contains('btn-remove-row')) {
+        var rows = productosContainer.querySelectorAll('.producto-row');
+        if (rows.length > 1) {
+          e.target.closest('.producto-row').remove();
+        }
+      }
+    });
+
+    btnAgregar.addEventListener('click', function() {
+      var firstRow = productosContainer.querySelector('.producto-row');
+      var newRow = firstRow.cloneNode(true);
+
+      newRow.querySelector('.producto-select').value = '';
+      newRow.querySelector('.cantidad-input').value = '1';
+
+      productosContainer.appendChild(newRow);
+      filtrarProductos();
+    });
+
+    document.getElementById('editar-pedido-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      var errorContainer = document.getElementById('error-container');
+      errorContainer.style.display = 'none';
+      errorContainer.textContent = '';
+
+      var usuarioId = document.getElementById('usuarioId').value;
+      var tiendaId = document.getElementById('tiendaId').value;
+      var fecha = document.getElementById('fecha').value;
+
+      var rows = productosContainer.querySelectorAll('.producto-row');
+      var productos = [];
+
+      for (var i = 0; i < rows.length; i++) {
+        var select = rows[i].querySelector('.producto-select');
+        var cantidad = rows[i].querySelector('.cantidad-input');
+
+        if (select.value && parseInt(cantidad.value) > 0) {
+          productos.push({
+            productoId: select.value,
+            cantidad: parseInt(cantidad.value)
+          });
+        }
+      }
+
+      if (productos.length === 0) {
+        errorContainer.textContent = 'Debe agregar al menos un producto.';
+        errorContainer.style.display = 'block';
+        return;
+      }
+
+      try {
+        var bodyData = { usuarioId: usuarioId, productos: productos };
+        if (tiendaId) bodyData.tiendaId = tiendaId;
+        if (fecha) bodyData.fecha = fecha;
+
+        var token = localStorage.getItem('token');
+        var estado = document.getElementById('estado').value;
+        if (estado) bodyData.estado = estado;
+
+        var response = await fetch('/pedidos/#{pedido._id}', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify(bodyData)
+        });
+
+        var data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Ocurrió un error al actualizar el pedido.');
+        }
+
+        showToast('Pedido actualizado correctamente', 'success');
+        setTimeout(function() {
+          window.location.href = '/vistas/pedidos';
+        }, 1000);
+
+      } catch (err) {
+        errorContainer.textContent = err.message;
+        errorContainer.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });

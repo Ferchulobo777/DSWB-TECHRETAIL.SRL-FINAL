@@ -1,0 +1,66 @@
+extends layout
+
+block content
+  header(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: none; border: none; box-shadow: none; padding: 0;")
+    h1 Pedidos
+    a.btn.btn-primary(href="/vistas/pedidos/nuevo") + Nuevo Pedido
+
+  .card
+    table
+      thead
+        tr
+          th Orden
+          th Usuario
+          th Tienda
+          th Productos
+          th Total
+          th Estado
+          th Fecha
+          th Acciones
+      tbody
+        each pedido in pedidos
+          tr
+            td(style="font-family: monospace; font-weight: 600;")= `ORD-${String(pedido.numeroOrden).padStart(4, '0')}`
+            td(style="font-weight: 600;")= pedido.usuarioId ? pedido.usuarioId.nombre : "—"
+            td(style="font-size: 0.85rem; color: var(--text-muted);")= pedido.tiendaId ? pedido.tiendaId.nombre : "General"
+            td(style="font-size: 0.85rem;")
+              each prod, i in pedido.productos
+                span= `${prod.productoId ? prod.productoId.nombre : "—"} x${prod.cantidad}`
+                if i < pedido.productos.length - 1
+                  span= ", "
+            td= `$${pedido.total.toLocaleString()}`
+            td
+              span(class=`badge badge--${pedido.estado || 'pendiente'}`)= pedido.estado || "pendiente"
+            td(style="font-size: 0.85rem; color: var(--text-muted);")= new Date(pedido.fecha || pedido.createdAt).toLocaleDateString('es-AR')
+            td
+              a(href=`/vistas/pedidos/editar/${pedido._id}` style="color: var(--primary); text-decoration: none; margin-right: 1rem;") Editar
+              button.btn-delete(data-id=`${pedido._id}` style="background: none; border: none; color: #ef4444; cursor: pointer; font-family: inherit; font-size: inherit; padding: 0;") Eliminar
+        else
+          tr
+            td(colspan="8" style="text-align: center; padding: 2rem;") No hay pedidos registrados.
+
+  script.
+    document.querySelectorAll('.btn-delete').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        const id = this.getAttribute('data-id');
+        if (!confirm('¿Estás seguro de eliminar este pedido? Se devolverán los productos al stock.')) return;
+
+        const token = localStorage.getItem('token');
+        try {
+          const response = await fetch('/pedidos/' + id, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Error al eliminar el pedido.');
+          }
+
+          showToast('Pedido eliminado correctamente', 'success');
+          this.closest('tr').remove();
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+    });

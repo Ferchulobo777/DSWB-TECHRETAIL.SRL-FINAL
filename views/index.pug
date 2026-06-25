@@ -1,0 +1,77 @@
+extends layout
+
+block content
+  .dashboard-header
+    h1 Panel de Administración
+    p.lead Bienvenido al sistema de gestión TechRetail SRL
+
+  .stats-grid
+    .stat-card
+      .stat-icon.stat-icon--users
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          path(d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2")
+          circle(cx="9" cy="7" r="4")
+          path(d="M23 21v-2a4 4 0 0 0-3-3.87")
+          path(d="M16 3.13a4 4 0 0 1 0 7.75")
+      .stat-info
+        span.stat-label Usuarios
+        span.stat-value= stats.totalUsuarios
+      a.stat-link(href="/vistas/usuarios") Ver todos →
+
+    .stat-card
+      .stat-icon.stat-icon--products
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          path(d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z")
+          line(x1="3" y1="6" x2="21" y2="6")
+          path(d="M16 10a4 4 0 0 1-8 0")
+      .stat-info
+        span.stat-label Productos
+        span.stat-value= stats.totalProductos
+      a.stat-link(href="/vistas/productos") Ver todos →
+
+    .stat-card
+      .stat-icon.stat-icon--stores
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          path(d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z")
+          polyline(points="9 22 9 12 15 12 15 22")
+      .stat-info
+        span.stat-label Tiendas
+        span.stat-value= stats.totalTiendas
+      a.stat-link(href="/vistas/tiendas") Ver todas →
+
+    .stat-card
+      .stat-icon.stat-icon--orders
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          path(d="M9 11l3 3L22 4")
+          path(d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11")
+      .stat-info
+        span.stat-label Pedidos
+        span.stat-value= stats.totalPedidos
+      a.stat-link(href="/vistas/pedidos") Ver todos →
+
+  if pedidosRecientes && pedidosRecientes.length > 0
+    .card(style="margin-top: 2rem;")
+      .card-header-row
+        h2(style="font-size: 1.15rem; font-weight: 700; margin: 0;") Pedidos Recientes
+        a.btn.btn-primary(href="/vistas/pedidos/nuevo" style="font-size: 0.85rem; padding: 0.4rem 1rem;") + Nuevo Pedido
+      table(style="margin-top: 1rem;")
+        thead
+          tr
+            th Orden
+            th Cliente
+            th Productos
+            th Total
+            th Estado
+        tbody
+          each pedido in pedidosRecientes
+            tr
+              td(style="font-family: monospace; font-weight: 600;")= `ORD-${String(pedido.numeroOrden).padStart(4, '0')}`
+              td= pedido.usuarioId ? `${pedido.usuarioId.nombre}` : "—"
+              td(style="font-size: 0.85rem; color: var(--text-muted);")= pedido.productos.map(p => p.productoId ? p.productoId.nombre : "—").join(", ")
+              td= `$${pedido.total.toLocaleString()}`
+              td
+                span(class=`badge badge--${pedido.estado}`)= pedido.estado
+  else
+    .card(style="margin-top: 2rem; text-align: center; padding: 3rem;")
+      p(style="color: var(--text-muted); margin-bottom: 1rem;") Aún no hay pedidos registrados.
+      a.btn.btn-primary(href="/vistas/pedidos/nuevo") Crear primer pedido
