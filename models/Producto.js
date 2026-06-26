@@ -22,6 +22,9 @@ const productoSchema = new mongoose.Schema({
   descripcion: {
     type: String,
   },
+  imagen: {
+    type: String,
+  },
   tienda: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Tienda",

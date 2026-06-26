@@ -3,6 +3,53 @@ const Producto = require("../models/Producto");
 const Usuario = require("../models/Usuario");
 const Tienda = require("../models/Tienda");
 
+exports.crearPedidoPublico = async (req, res, next) => {
+  try {
+    const { usuarioId, productos } = req.body;
+    const tienda = await Tienda.findOne({ slug: req.params.slug });
+    if (!tienda) {
+      return res.status(404).json({ error: "Tienda no encontrada" });
+    }
+
+    let total = 0;
+
+    const usuarioExiste = await Usuario.findById(usuarioId);
+    if (!usuarioExiste) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    for (const item of productos) {
+      const prod = await Producto.findById(item.productoId);
+      if (!prod) {
+        return res.status(404).json({ error: "Producto no encontrado" });
+      }
+      if (prod.stock < item.cantidad) {
+        return res.status(400).json({ error: `Stock insuficiente para: ${prod.nombre}` });
+      }
+      prod.stock -= item.cantidad;
+      await prod.save();
+      total += prod.precio * item.cantidad;
+    }
+
+    const ultimoPedido = await Pedido.findOne().sort({ numeroOrden: -1 });
+    const numeroOrden =
+      ultimoPedido && ultimoPedido.numeroOrden ? ultimoPedido.numeroOrden + 1 : 1;
+
+    const nuevoPedido = new Pedido({
+      numeroOrden,
+      usuarioId,
+      tiendaId: tienda._id,
+      productos,
+      total,
+    });
+
+    await nuevoPedido.save();
+    res.status(201).json(nuevoPedido);
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.crearPedido = async (req, res, next) => {
   try {
     const { usuarioId, tiendaId, fecha, productos, estado } = req.body;

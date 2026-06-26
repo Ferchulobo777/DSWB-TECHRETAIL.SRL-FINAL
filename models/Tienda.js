@@ -9,6 +9,11 @@ const tiendaSchema = new mongoose.Schema({
     direccion: {
         type: String,
         required: true
+    },
+
+    slug: {
+        type: String,
+        unique: true
     }
 },
 {

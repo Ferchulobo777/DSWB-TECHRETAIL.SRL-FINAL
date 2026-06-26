@@ -1,0 +1,41 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= tienda ? tienda.nombre + ' - TechRetail' : 'TechRetail'
+    link(rel="stylesheet" href="/css/style.css")
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet")
+  body
+    header.public-header
+      .nav-content
+        a.logo(href="/") TechRetail
+        nav.nav-links(style="display: flex; align-items: center;")
+          a(href="/vistas/tiendas" style="display: flex; align-items: center; gap: 0.4rem;")
+            svg(width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+              path(d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z")
+              polyline(points="9 22 9 12 15 12 15 22")
+            | Tiendas
+
+    .container
+      block content
+
+    #toast-container
+
+    script.
+      window.showToast = function(message, type) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + (type || 'success');
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(function() {
+          toast.classList.add('toast-hiding');
+          setTimeout(function() {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+          }, 300);
+        }, 3000);
+      };

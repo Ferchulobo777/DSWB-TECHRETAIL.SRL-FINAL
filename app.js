@@ -29,9 +29,11 @@ const pedidoRoutes = require('./routes/pedido.routes');
 app.use('/pedidos', pedidoRoutes);
 
 
-// ruta de prueba
 const webRoutes = require('./routes/web.routes');
 app.use('/vistas', webRoutes);
+
+const publicRoutes = require('./routes/public.routes');
+app.use('/', publicRoutes);
 
 // redirigir raíz a vistas por defecto para facilitar visualización
 app.get('/', (req, res) => {
