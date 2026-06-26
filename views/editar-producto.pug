@@ -76,6 +76,20 @@ block content
             onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
           )= producto.descripcion
 
+        .form-group(style="margin-bottom: 1.25rem;")
+          label(for="imagen" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") URL de Imagen
+          input#imagen(
+            type="url"
+            name="imagen"
+            placeholder="https://ejemplo.com/imagen.jpg (opcional)"
+            value=producto.imagen || ''
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;"
+            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(37, 99, 235, 0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          )
+          #imagen-preview(style="margin-top: 0.75rem; display: " + (producto.imagen ? 'block' : 'none') + ";")
+            img(src=producto.imagen || '' style="max-width: 100%; max-height: 180px; border-radius: 8px; border: 1px solid var(--border); object-fit: cover;")
+
         .form-group(style="margin-bottom: 1.75rem;")
           label(for="tienda" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.9rem;") Tienda
           select#tienda(
@@ -110,8 +124,10 @@ block content
       const descripcion = document.getElementById('descripcion').value;
       const tienda = document.getElementById('tienda').value;
       
+      const imagen = document.getElementById('imagen').value;
       const bodyData = { codigo, nombre, precio, stock, descripcion };
       if (tienda) bodyData.tienda = tienda;
+      if (imagen) bodyData.imagen = imagen;
       
       try {
         const response = await fetch('/productos/#{producto._id}', {
@@ -139,4 +155,31 @@ block content
         errorContainer.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+    });
+
+    document.getElementById('imagen').addEventListener('input', function() {
+      const preview = document.getElementById('imagen-preview');
+      const img = preview.querySelector('img');
+      const url = this.value.trim();
+      if (url) {
+        img.src = url;
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+        img.src = '';
+      }
+    });
+
+    document.querySelector('#imagen-preview img').addEventListener('error', function() {
+      this.style.display = 'none';
+      var fallback = document.createElement('div');
+      fallback.textContent = 'No se pudo cargar la imagen';
+      fallback.style.cssText = 'padding: 2rem; text-align: center; color: var(--text-muted); background: #f8fafc; border-radius: 8px; border: 1px solid var(--border); font-size: 0.85rem;';
+      this.parentNode.appendChild(fallback);
+    });
+
+    document.querySelector('#imagen-preview img').addEventListener('load', function() {
+      this.style.display = '';
+      var existing = this.parentNode.querySelector('div:last-child');
+      if (existing && existing.tagName === 'DIV') existing.remove();
     });

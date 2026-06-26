@@ -12,6 +12,7 @@ block content
           th Nombre
           th Dirección
           th Productos
+          th Tienda Online
           th Acciones
       tbody
         each tienda in tiendas
@@ -20,11 +21,21 @@ block content
             td(style="color: var(--text-muted); font-size: 0.875rem;")= tienda.direccion
             td(style="text-align: center; font-weight: 600;")= countMap[tienda._id] || 0
             td
+              if tienda.slug
+                a(href="/tienda/" + tienda.slug target="_blank" style="color: var(--primary); text-decoration: none; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.3rem;")
+                  svg(width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                    path(d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6")
+                    polyline(points="15 3 21 3 21 9")
+                    line(x1="10" y1="14" x2="21" y2="3")
+                  | Ver tienda
+              else
+                span(style="color: var(--text-muted); font-size: 0.8rem;") Editar para generar
+            td
               a(href=`/vistas/tiendas/editar/${tienda._id}` style="color: var(--primary); text-decoration: none; margin-right: 1rem;") Editar
               button.btn-delete(data-id=`${tienda._id}` style="background: none; border: none; color: #ef4444; cursor: pointer; font-family: inherit; font-size: inherit; padding: 0;") Eliminar
         else
           tr
-            td(colspan="4" style="text-align: center; padding: 2rem;") No hay tiendas registradas.
+            td(colspan="5" style="text-align: center; padding: 2rem;") No hay tiendas registradas.
 
   script.
     document.querySelectorAll('.btn-delete').forEach(function(btn) {
