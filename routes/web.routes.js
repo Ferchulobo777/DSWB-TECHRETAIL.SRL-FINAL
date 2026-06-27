@@ -5,11 +5,13 @@ const productoCtrl = require("../controllers/producto.controller");
 const usuarioCtrl = require("../controllers/usuario.controller");
 const tiendaCtrl = require("../controllers/tienda.controller");
 const pedidoCtrl = require("../controllers/pedido.controller");
+const metricsCtrl = require("../controllers/metrics.controller");
 
 const Tienda = require("../models/Tienda");
 const Usuario = require("../models/Usuario");
 const Producto = require("../models/Producto");
 const Pedido = require("../models/Pedido");
+
 
 // Dashboard / Home con estadísticas
 router.get("/", async (req, res, next) => {
@@ -35,6 +37,9 @@ router.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+// Metrics dashboard
+router.get("/metrics", metricsCtrl.renderMetrics);
 
 // Login
 router.get("/login", (req, res) => {

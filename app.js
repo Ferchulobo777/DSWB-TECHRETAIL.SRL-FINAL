@@ -35,6 +35,10 @@ app.use('/vistas', webRoutes);
 const publicRoutes = require('./routes/public.routes');
 app.use('/', publicRoutes);
 
+const metricsRoutes = require('./routes/metrics.routes');
+app.use('/api/metrics', metricsRoutes);
+
+
 // redirigir raíz a vistas por defecto para facilitar visualización
 app.get('/', (req, res) => {
   res.redirect('/vistas');

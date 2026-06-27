@@ -1,0 +1,155 @@
+extends layout
+
+block content
+  .dashboard-header
+    h1 Métricas De Venta
+    p.lead Dashboard general del negocio
+
+  // CARDS
+  .stats-grid
+    // Total pedidos
+    .stat-card(data-view="pedidos")
+      .stat-icon.stat-icon--orders
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          circle(cx="6" cy="19" r="2")
+          circle(cx="17" cy="19" r="2")
+          path(d="M17 17H6.14L4.1 4H1.5")
+          path(d="M3 6h19l-2 10H6")
+      .stat-label Total pedidos
+      .stat-value= data.totalPedidos
+
+    // Ventas totales
+    .stat-card(data-view="ventas")
+      .stat-icon.stat-icon--stores
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          line(x1="12" y1="1" x2="12" y2="23")
+          path(d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6")
+      .stat-label Ventas totales
+      .stat-value= data.ventasTotales
+
+    // Productos vendidos
+    .stat-card(data-view="productos")
+      .stat-icon.stat-icon--products
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          line(x1="18" y1="20" x2="18" y2="10")
+          line(x1="12" y1="20" x2="12" y2="4")
+          line(x1="6" y1="20" x2="6" y2="14")
+      .stat-label Productos vendidos
+      .stat-value= data.cantidadProductos
+
+    // Producto más vendido
+    .stat-card(data-view="topProductos")
+      .stat-icon.stat-icon--users
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          path(d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6")
+          path(d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18")
+          path(d="M4 22h16")
+          path(d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34")
+          path(d="M12 2a5 5 0 0 0-5 5v3c0 2.21 1.79 4 4 4s4-1.79 4-4V7a5 5 0 0 0-5-5z")
+      .stat-label Producto más vendido
+      .stat-value= data.productoMasVendidoCantidad
+
+  // DETALLE DRILL DOWN
+  .detail-section
+    h2#detailTitle Detalle
+
+    table.detail-table
+      thead
+        tr
+          th#col1
+          th#col2
+      tbody#detailBody
+
+  // DATA AL FRONT
+  script.
+    window.metricsData = !{JSON.stringify(data)};
+
+  // JS DRILL DOWN
+  script.
+    const cards = document.querySelectorAll(".stat-card");
+    const title = document.getElementById("detailTitle");
+    const body = document.getElementById("detailBody");
+    const col1 = document.getElementById("col1");
+    const col2 = document.getElementById("col2");
+
+    const data = window.metricsData;
+
+    function renderTable(view) {
+      body.innerHTML = "";
+
+      // 1. PEDIDOS
+      if (view === "pedidos") {
+        title.textContent = "Pedidos por sucursal";
+        col1.textContent = "Sucursal";
+        col2.textContent = "Cantidad de pedidos";
+
+        data.pedidosPorSucursal.forEach(item => {
+          body.innerHTML += `
+            <tr>
+              <td>${item._id}</td>
+              <td>${item.total}</td>
+            </tr>
+          `;
+        });
+      }
+
+      // 2. VENTAS
+      if (view === "ventas") {
+        title.textContent = "Ventas por sucursal";
+        col1.textContent = "Sucursal";
+        col2.textContent = "Ventas totales";
+
+        data.ventasPorSucursal.forEach(item => {
+          body.innerHTML += `
+            <tr>
+              <td>${item._id}</td>
+              <td>${item.total}</td>
+            </tr>
+          `;
+        });
+      }
+
+      // 3. PRODUCTOS
+      if (view === "productos") {
+        title.textContent = "Productos más vendidos";
+        col1.textContent = "Producto";
+        col2.textContent = "Cantidad vendida";
+
+        data.productosMasVendidos.forEach(item => {
+          body.innerHTML += `
+            <tr>
+              <td>${item._id}</td>
+              <td>${item.cantidad}</td>
+            </tr>
+          `;
+        });
+      }
+
+      // 4. PRODUCTO TOP
+      if (view === "topProductos") {
+        title.textContent = "Producto más vendido global";
+        col1.textContent = "Producto";
+        col2.textContent = "Cantidad";
+
+        const top = data.productosMasVendidos[0];
+
+        if (top) {
+          body.innerHTML = `
+            <tr>
+              <td>${top._id}</td>
+              <td>${top.cantidad}</td>
+            </tr>
+          `;
+        }
+      }
+    }
+
+    // click en cards
+    cards.forEach(card => {
+      card.addEventListener("click", () => {
+        renderTable(card.dataset.view);
+      });
+    });
+
+    // carga inicial
+    renderTable("pedidos");
