@@ -34,7 +34,7 @@ block content
           line(x1="18" y1="20" x2="18" y2="10")
           line(x1="12" y1="20" x2="12" y2="4")
           line(x1="6" y1="20" x2="6" y2="14")
-      .stat-label Productos vendidos
+      .stat-label Cantidad de Productos vendidos
       .stat-value= data.cantidadProductos
 
     // Producto más vendido
@@ -111,7 +111,7 @@ block content
 
       // 3. PRODUCTOS
       if (view === "productos") {
-        title.textContent = "Productos más vendidos";
+        title.textContent = "Cantidad de productos vendidos por sucursal";
         col1.textContent = "Producto";
         col2.textContent = "Cantidad vendida";
 
@@ -126,22 +126,20 @@ block content
       }
 
       // 4. PRODUCTO TOP
-      if (view === "topProductos") {
-        title.textContent = "Producto más vendido global";
-        col1.textContent = "Producto";
-        col2.textContent = "Cantidad";
+     if (view === "topProductos") {
+        title.textContent = "Producto más vendido por sucursal";
+        col1.textContent = "Sucursal";
+        col2.textContent = "Producto (Cantidad)";
 
-        const top = data.productosMasVendidos[0];
-
-        if (top) {
-          body.innerHTML = `
+        body.innerHTML = data.topProductosPorSucursal
+            .map(item => `
             <tr>
-              <td>${top._id}</td>
-              <td>${top.cantidad}</td>
+                <td>${item.nombreSucursal}</td>
+                <td>${item.nombreProducto} (${item.cantidad})</td>
             </tr>
-          `;
+            `)
+            .join("");
         }
-      }
     }
 
     // click en cards
