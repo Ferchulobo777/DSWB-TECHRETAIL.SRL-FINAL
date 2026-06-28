@@ -6,6 +6,9 @@ block content
     a.btn.btn-primary(href="/vistas/productos/nuevo") + Nuevo Producto
 
   .card
+    .search-bar(style="margin-bottom: 1rem;")
+      input#searchInput(type="text" placeholder="Buscar por nombre, código o tienda..." style="width: 100%; max-width: 480px; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.95rem;")
+
     table
       thead
         tr
@@ -18,7 +21,7 @@ block content
           th Acciones
       tbody
         each producto in productos
-          tr
+          tr.product-row(data-search=`${producto.codigo} ${producto.nombre} ${producto.tienda ? producto.tienda.nombre : ''}`)
             td(style="font-family: monospace; font-weight: 600;")= producto.codigo
             td(style="font-weight: 600;")= producto.nombre
             td= `$${producto.precio.toLocaleString()}`
@@ -34,6 +37,22 @@ block content
             td(colspan="7" style="text-align: center; padding: 2rem;") No hay productos registrados.
 
   script.
+    const searchInput = document.getElementById('searchInput');
+    const rows = Array.from(document.querySelectorAll('.product-row'));
+
+    function filtrarProductos() {
+      const query = (searchInput?.value || '').trim().toLowerCase();
+
+      rows.forEach(function(row) {
+        const searchText = (row.getAttribute('data-search') || '').toLowerCase();
+        row.style.display = searchText.includes(query) ? '' : 'none';
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', filtrarProductos);
+    }
+
     document.querySelectorAll('.btn-delete').forEach(function(btn) {
       btn.addEventListener('click', async function() {
         const id = this.getAttribute('data-id');
